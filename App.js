@@ -1,22 +1,31 @@
-import { StatusBar } from "expo-status-bar";
+import "react-native-gesture-handler";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
 import React from "react";
-import {
-  StyleSheet,
-  Text,
-  TouchableWithoutFeedback,
-  SafeAreaView,
-  Image,
-  Button,
-} from "react-native";
-import icon from "./assets/icon.png";
+import { StyleSheet } from "react-native";
+import LoginScreen from "./screens/LoginScreen";
+import RegisterScreen from "./screens/RegisterScreen";
+import HomeScreen from "./screens/HomeScreen";
+import AddPlaceScreen from "./screens/AddPlaceScreen";
+
+const Stack = createStackNavigator();
+
+const globalOptionsScreen = {
+  headerStyle: { backgroundColor: "#F33712" },
+  headerTitleSyle: { color: "white" },
+  headerTintColor: "white",
+};
 
 export default function App() {
   return (
-    <SafeAreaView style={styles.container}>
-      <Text>Open up App.js to start tu working on your app!</Text>
-      <Button title={"click me"} />
-      <StatusBar style="auto" />
-    </SafeAreaView>
+    <NavigationContainer>
+      <Stack.Navigator screenOptions={globalOptionsScreen}>
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="Register" component={RegisterScreen} />
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="AddPlace" component={AddPlaceScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
