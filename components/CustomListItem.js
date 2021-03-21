@@ -1,18 +1,29 @@
-import React from "react";
+import React, { useContext } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { ListItem } from "react-native-elements";
+import { PlaceContext } from "../contexts/PlaceContext";
+import { MaterialIcons } from "@expo/vector-icons";
 
-const CustomListItem = ({ id, placeName, enterPlace }) => {
+const CustomListItem = ({ id, placeName, goToPlace }) => {
+  const { currentPlace } = useContext(PlaceContext);
   return (
-    <ListItem>
-      <ListItem.Content>
+    <ListItem onPress={() => goToPlace(id, placeName)} key={id} bottomDivider>
+      {placeName === currentPlace ? (
+        <MaterialIcons name="done-outline" size={24} color="black" />
+      ) : (
+        <></>
+      )}
+      <ListItem.Content
+        style={{ marginLeft: placeName === currentPlace ? 0 : 24 }}
+      >
         <ListItem.Title style={{ fontWeight: "800" }}>
-          Albert Arms
+          {placeName}
         </ListItem.Title>
         <ListItem.Subtitle numberOfLines={1} ellipsizeMode="tail">
           Subtitle
         </ListItem.Subtitle>
       </ListItem.Content>
+      <ListItem.Chevron />
     </ListItem>
   );
 };

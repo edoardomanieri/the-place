@@ -1,10 +1,11 @@
 import React, { useLayoutEffect, useState } from "react";
 import { KeyboardAvoidingView } from "react-native";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Button, Input } from "react-native-elements";
 import MapView from "react-native-maps";
 import * as Location from "expo-location";
 import { db, auth } from "../firebase";
+import * as Crypto from "expo-crypto";
 
 const AddPlaceScreen = ({ navigation }) => {
   const [address, setAddress] = useState("");
@@ -18,13 +19,18 @@ const AddPlaceScreen = ({ navigation }) => {
   });
 
   const createPlace = async () => {
+    const digest = await Crypto.digestStringAsync(
+      Crypto.CryptoDigestAlgorithm.SHA256,
+      placePassword
+    );
+
     await db
       .collection("places")
       .add({
         placeCreatorEmail: auth.currentUser.email,
         placeName: placeName,
         placeAddress: address,
-        placePassword: placePassword,
+        placePassword: digest,
       })
       .then(() => navigation.goBack())
       .catch((error) => alert(error.message));

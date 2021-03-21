@@ -1,22 +1,38 @@
-import React, { useLayoutEffect } from "react";
+import React, { useLayoutEffect, useEffect, useState } from "react";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native";
-import { StyleSheet, Text, ScrollView } from "react-native";
+import { StyleSheet, ScrollView } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import CustomListItem from "../components/CustomListItem";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
 import { Ionicons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import { Button } from "react-native-elements";
 
 const HomeScreen = ({ navigation }) => {
+  const [places, setPlaces] = useState([]);
+
+  useEffect(() => {
+    const unsubscribe = db.collection("places").onSnapshot((snapshot) =>
+      setPlaces(
+        snapshot.docs.map((doc) => ({
+          id: doc.id,
+          data: doc.data(),
+        }))
+      )
+    );
+    return unsubscribe;
+  }, []);
+
   const signOut = () => {
     auth.signOut().then(() => {
       navigation.replace("Login");
     });
   };
 
-  const joinPlace = () => {};
+  const joinPlace = () => {
+    navigation.navigate("JoinPlace");
+  };
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -49,12 +65,26 @@ const HomeScreen = ({ navigation }) => {
     });
   }, []);
 
+  const goToPlace = (id, placeName) => {
+    navigation.navigate("Place", {
+      id,
+      placeName,
+    });
+  };
+
   return (
     <SafeAreaView>
-      <ScrollView>
-        <CustomListItem />
+      <ScrollView style={styles.scrollContainer}>
+        {places.map(({ id, data: { placeName } }) => (
+          <CustomListItem
+            key={id}
+            id={id}
+            placeName={placeName}
+            goToPlace={goToPlace}
+          />
+        ))}
       </ScrollView>
-      <View style={styles.container}>
+      <View style={styles.buttonContainer}>
         <Button
           title="Join a place"
           containerStyle={styles.button}
@@ -70,7 +100,10 @@ const HomeScreen = ({ navigation }) => {
 export default HomeScreen;
 
 const styles = StyleSheet.create({
-  container: {
+  scrollContainer: {
+    height: "90%",
+  },
+  buttonContainer: {
     justifyContent: "center",
     alignItems: "center",
   },
