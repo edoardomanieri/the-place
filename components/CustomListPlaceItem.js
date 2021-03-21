@@ -4,7 +4,7 @@ import { ListItem } from "react-native-elements";
 import { PlaceContext } from "../contexts/PlaceContext";
 import { MaterialIcons } from "@expo/vector-icons";
 
-const CustomListItem = ({ id, placeName, goToPlace }) => {
+const CustomListItem = ({ id, placeName, placeAddress, goToPlace }) => {
   const { currentPlace } = useContext(PlaceContext);
   return (
     <ListItem onPress={() => goToPlace(id, placeName)} key={id} bottomDivider>
@@ -20,7 +20,7 @@ const CustomListItem = ({ id, placeName, goToPlace }) => {
           {placeName}
         </ListItem.Title>
         <ListItem.Subtitle numberOfLines={1} ellipsizeMode="tail">
-          Subtitle
+          {placeAddress}
         </ListItem.Subtitle>
       </ListItem.Content>
       <ListItem.Chevron />

@@ -3,7 +3,7 @@ import { View } from "react-native";
 import { SafeAreaView } from "react-native";
 import { StyleSheet, ScrollView } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import CustomListItem from "../components/CustomListItem";
+import CustomListPlaceItem from "../components/CustomListPlaceItem";
 import { auth, db } from "../firebase";
 import { Ionicons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
@@ -13,14 +13,18 @@ const HomeScreen = ({ navigation }) => {
   const [places, setPlaces] = useState([]);
 
   useEffect(() => {
-    const unsubscribe = db.collection("places").onSnapshot((snapshot) =>
-      setPlaces(
-        snapshot.docs.map((doc) => ({
-          id: doc.id,
-          data: doc.data(),
-        }))
-      )
-    );
+    const unsubscribe = db
+      .collection("userPlaces")
+      .doc(auth.currentUser.displayName)
+      .collection("places")
+      .onSnapshot((snapshot) =>
+        setPlaces(
+          snapshot.docs.map((doc) => ({
+            id: doc.id,
+            data: doc.data(),
+          }))
+        )
+      );
     return unsubscribe;
   }, []);
 
@@ -56,7 +60,7 @@ const HomeScreen = ({ navigation }) => {
         >
           <TouchableOpacity
             activeOpacity={0.5}
-            onPress={() => navigation.navigate("AddPlace")}
+            onPress={() => navigation.navigate("CreatePlace")}
           >
             <AntDesign name="pluscircle" size={24} color="black" />
           </TouchableOpacity>
@@ -75,11 +79,12 @@ const HomeScreen = ({ navigation }) => {
   return (
     <SafeAreaView>
       <ScrollView style={styles.scrollContainer}>
-        {places.map(({ id, data: { placeName } }) => (
-          <CustomListItem
+        {places.map(({ id, data: { name, address } }) => (
+          <CustomListPlaceItem
             key={id}
             id={id}
-            placeName={placeName}
+            placeName={name}
+            placeAddress={address}
             goToPlace={goToPlace}
           />
         ))}

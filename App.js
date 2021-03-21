@@ -6,7 +6,7 @@ import { StyleSheet } from "react-native";
 import LoginScreen from "./screens/LoginScreen";
 import RegisterScreen from "./screens/RegisterScreen";
 import HomeScreen from "./screens/HomeScreen";
-import AddPlaceScreen from "./screens/AddPlaceScreen";
+import CreatePlaceScreen from "./screens/CreatePlaceScreen";
 import JoinPlaceScreen from "./screens/JoinPlaceScreen";
 import PlaceScreen from "./screens/PlaceScreen";
 import PeopleListScreen from "./screens/PeopleListScreen";
@@ -28,7 +28,7 @@ export default function App() {
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="Register" component={RegisterScreen} />
           <Stack.Screen name="Home" component={HomeScreen} />
-          <Stack.Screen name="AddPlace" component={AddPlaceScreen} />
+          <Stack.Screen name="CreatePlace" component={CreatePlaceScreen} />
           <Stack.Screen name="JoinPlace" component={JoinPlaceScreen} />
           <Stack.Screen name="Place" component={PlaceScreen} />
           <Stack.Screen name="PeopleList" component={PeopleListScreen} />

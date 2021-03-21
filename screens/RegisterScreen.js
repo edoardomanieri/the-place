@@ -14,15 +14,17 @@ const RegisterScreen = ({ navigation }) => {
     navigation.setOptions({
       headerBackTitle: "Back to Login",
     });
-  }, [navigation]);
+  }, []);
 
-  const register = () => {
+  const register = async () => {
     auth
       .createUserWithEmailAndPassword(email, password)
       .then((authUser) => {
         authUser.user.updateProfile({ displayName: name });
       })
       .catch((error) => alert(error.message));
+
+    navigation.replace("Login");
   };
 
   return (

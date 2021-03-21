@@ -15,7 +15,8 @@ const PlaceScreen = ({ navigation, route }) => {
   }, []);
 
   const enterPlace = () => {
-    //put in db
+    // Check that location matches
+    //update db
     navigation.goBack();
 
     setCurrentPlace(route.params.placeName);
@@ -31,12 +32,12 @@ const PlaceScreen = ({ navigation, route }) => {
   return (
     <View style={styles.container}>
       {peopleInPlace.length == 1 ? (
-        <Text h3 style={{ marginTop: 10 }}>
-          1 Person
+        <Text h4 style={{ marginTop: 10 }}>
+          1 Person currently in {route.params.placeName}
         </Text>
       ) : (
-        <Text h3 style={{ marginTop: 10 }}>
-          {peopleInPlace.length} People
+        <Text h4 style={{ marginTop: 10 }}>
+          {peopleInPlace.length} People currently in {route.params.placeName}
         </Text>
       )}
       <Button
@@ -46,17 +47,17 @@ const PlaceScreen = ({ navigation, route }) => {
           })
         }
         style={styles.button}
-        title="See people in place"
+        title="Check Them Out"
         type="outline"
         raised
       />
       {peopleGeneral.length == 1 ? (
-        <Text h3 style={{ marginTop: 20 }}>
-          1 Person
+        <Text h4 style={{ marginTop: 20 }}>
+          1 Person follows {route.params.placeName}
         </Text>
       ) : (
-        <Text h3 style={{ marginTop: 20 }}>
-          {peopleGeneral.length} People
+        <Text h4 style={{ marginTop: 20 }}>
+          {peopleGeneral.length} People follow {route.params.placeName}
         </Text>
       )}
       <Button
@@ -66,27 +67,37 @@ const PlaceScreen = ({ navigation, route }) => {
           })
         }
         style={styles.button}
-        title="See people that have joined this place"
+        title="Check Them Out"
         type="outline"
         raised
       />
       {currentPlace === route.params.placeName ? (
-        <Button
-          onPress={exitPlace}
-          style={styles.button}
-          title="Exit this place"
-          type="outline"
-          raised
-        />
-      ) : currentPlace === "" ? (
-        <Button
-          onPress={enterPlace}
-          style={styles.button}
-          title="Enter this place"
-          type="outline"
-          raised
-        />
-      ) : null}
+        <View>
+          <Text h4 style={{ marginTop: 20, alignSelf: "center" }}>
+            Are you leaving?
+          </Text>
+          <Button
+            onPress={exitPlace}
+            style={styles.button}
+            title="Exit this place"
+            type="outline"
+            raised
+          />
+        </View>
+      ) : (
+        <View>
+          <Text h4 style={{ marginTop: 20, alignSelf: "center" }}>
+            Are you currently in {route.params.placeName}?
+          </Text>
+          <Button
+            onPress={enterPlace}
+            style={styles.button}
+            title="Enter this place"
+            type="outline"
+            raised
+          />
+        </View>
+      )}
     </View>
   );
 };

@@ -6,8 +6,9 @@ import MapView from "react-native-maps";
 import * as Location from "expo-location";
 import { db, auth } from "../firebase";
 import * as Crypto from "expo-crypto";
+import * as firebase from "firebase";
 
-const AddPlaceScreen = ({ navigation }) => {
+const CreatePlaceScreen = ({ navigation }) => {
   const [address, setAddress] = useState("");
   const [placeName, setPlaceName] = useState("");
   const [placePassword, setPlacePassword] = useState("");
@@ -18,7 +19,7 @@ const AddPlaceScreen = ({ navigation }) => {
     longitudeDelta: 0.0421,
   });
 
-  const createPlace = async () => {
+  const updateDB = async () => {
     const digest = await Crypto.digestStringAsync(
       Crypto.CryptoDigestAlgorithm.SHA256,
       placePassword
@@ -26,14 +27,48 @@ const AddPlaceScreen = ({ navigation }) => {
 
     await db
       .collection("places")
-      .add({
-        placeCreatorEmail: auth.currentUser.email,
-        placeName: placeName,
-        placeAddress: address,
-        placePassword: digest,
+      .doc(placeName)
+      .set({
+        creatorEmail: auth.currentUser.email,
+        address: address,
+        password: digest,
+      })
+      .catch((error) => alert(error.message));
+
+    await db
+      .collection("places")
+      .doc(placeName)
+      .collection("joiners")
+      .doc(auth.currentUser.displayName)
+      .set({
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        email: auth.currentUser.email,
+      })
+      .catch((error) => alert(error.message));
+
+    await db
+      .collection("userPlaces")
+      .doc(auth.currentUser.displayName)
+      .collection("places")
+      .doc(placeName)
+      .set({
+        address: address,
       })
       .then(() => navigation.goBack())
       .catch((error) => alert(error.message));
+  };
+
+  const createPlace = () => {
+    db.collection("places")
+      .doc(placeName)
+      .get()
+      .then((snapshot) => {
+        if (snapshot.exists) {
+          alert("Please choose another name");
+        } else {
+          updateDB();
+        }
+      });
   };
 
   const getLocation = () => {
@@ -49,7 +84,7 @@ const AddPlaceScreen = ({ navigation }) => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: "Add New Place",
+      title: "Create New Place",
     });
   }, []);
 
@@ -91,14 +126,14 @@ const AddPlaceScreen = ({ navigation }) => {
         onPress={createPlace}
         containerStyle={styles.button}
         type="outline"
-        title="Add Place"
+        title="Create Place"
       />
       <View style={{ height: 100 }} />
     </KeyboardAvoidingView>
   );
 };
 
-export default AddPlaceScreen;
+export default CreatePlaceScreen;
 
 const styles = StyleSheet.create({
   container: {
