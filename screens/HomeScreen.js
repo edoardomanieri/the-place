@@ -7,6 +7,7 @@ import CustomListItem from "../components/CustomListItem";
 import { auth } from "../firebase";
 import { Ionicons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
+import { Button } from "react-native-elements";
 
 const HomeScreen = ({ navigation }) => {
   const signOut = () => {
@@ -14,6 +15,8 @@ const HomeScreen = ({ navigation }) => {
       navigation.replace("Login");
     });
   };
+
+  const joinPlace = () => {};
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -51,10 +54,28 @@ const HomeScreen = ({ navigation }) => {
       <ScrollView>
         <CustomListItem />
       </ScrollView>
+      <View style={styles.container}>
+        <Button
+          title="Join a place"
+          containerStyle={styles.button}
+          type="outline"
+          raised
+          onPress={joinPlace}
+        />
+      </View>
     </SafeAreaView>
   );
 };
 
 export default HomeScreen;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  button: {
+    marginTop: 20,
+    width: 200,
+  },
+});
