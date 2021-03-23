@@ -20,55 +20,53 @@ const CreatePlaceScreen = ({ navigation }) => {
   });
 
   const updateDB = async () => {
-    const digest = await Crypto.digestStringAsync(
-      Crypto.CryptoDigestAlgorithm.SHA256,
-      placePassword
-    );
+    try {
+      const digest = await Crypto.digestStringAsync(
+        Crypto.CryptoDigestAlgorithm.SHA256,
+        placePassword
+      );
 
-    await db
-      .collection("places")
-      .doc(placeName)
-      .set({
+      await db.collection("places").doc(placeName).set({
         creatorEmail: auth.currentUser.email,
         address: address,
         password: digest,
-      })
-      .catch((error) => alert(error.message));
+      });
 
-    await db
-      .collection("places")
-      .doc(placeName)
-      .collection("joiners")
-      .doc(auth.currentUser.displayName)
-      .set({
-        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-        email: auth.currentUser.email,
-      })
-      .catch((error) => alert(error.message));
+      await db
+        .collection("places")
+        .doc(placeName)
+        .collection("joiners")
+        .doc(auth.currentUser.displayName)
+        .set({
+          timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+          email: auth.currentUser.email,
+        });
 
-    await db
-      .collection("userPlaces")
-      .doc(auth.currentUser.displayName)
-      .collection("places")
-      .doc(placeName)
-      .set({
-        address: address,
-      })
-      .then(() => navigation.goBack())
-      .catch((error) => alert(error.message));
+      await db
+        .collection("userPlaces")
+        .doc(auth.currentUser.displayName)
+        .collection("places")
+        .doc(placeName)
+        .set({
+          address: address,
+        });
+      navigation.goBack();
+    } catch (error) {
+      alert(error.message);
+    }
   };
 
-  const createPlace = () => {
-    db.collection("places")
-      .doc(placeName)
-      .get()
-      .then((snapshot) => {
-        if (snapshot.exists) {
-          alert("Please choose another name");
-        } else {
-          updateDB();
-        }
-      });
+  const createPlace = async () => {
+    try {
+      const snapshot = await db.collection("places").doc(placeName).get();
+      if (snapshot.exists) {
+        alert("Please choose another name");
+      } else {
+        updateDB();
+      }
+    } catch (error) {
+      alert(error.message);
+    }
   };
 
   const getLocation = () => {

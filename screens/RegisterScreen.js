@@ -17,14 +17,16 @@ const RegisterScreen = ({ navigation }) => {
   }, []);
 
   const register = async () => {
-    auth
-      .createUserWithEmailAndPassword(email, password)
-      .then((authUser) => {
-        authUser.user.updateProfile({ displayName: name });
-      })
-      .catch((error) => alert(error.message));
-
-    navigation.replace("Login");
+    try {
+      const authUser = await auth.createUserWithEmailAndPassword(
+        email,
+        password
+      );
+      authUser.user.updateProfile({ displayName: name });
+      navigation.replace("Login");
+    } catch (error) {
+      alert(error.message);
+    }
   };
 
   return (
