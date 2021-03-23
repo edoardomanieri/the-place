@@ -22,8 +22,8 @@ const RegisterScreen = ({ navigation }) => {
         email,
         password
       );
-      authUser.user.updateProfile({ displayName: name });
-      navigation.replace("Login");
+      await authUser.user.updateProfile({ displayName: name });
+      navigation.replace("Home");
     } catch (error) {
       alert(error.message);
     }

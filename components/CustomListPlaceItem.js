@@ -4,10 +4,14 @@ import { ListItem } from "react-native-elements";
 import { PlaceContext } from "../contexts/PlaceContext";
 import { MaterialIcons } from "@expo/vector-icons";
 
-const CustomListItem = ({ id, placeName, placeAddress, goToPlace }) => {
+const CustomListItem = ({ placeName, placeAddress, goToPlace }) => {
   const { currentPlace } = useContext(PlaceContext);
   return (
-    <ListItem onPress={() => goToPlace(id, placeName)} key={id} bottomDivider>
+    <ListItem
+      onPress={() => goToPlace(placeName)}
+      key={placeName}
+      bottomDivider
+    >
       {placeName === currentPlace ? (
         <MaterialIcons name="done-outline" size={24} color="black" />
       ) : (

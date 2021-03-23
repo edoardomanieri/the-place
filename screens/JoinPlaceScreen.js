@@ -4,17 +4,40 @@ import { Button, Input } from "react-native-elements";
 import { StatusBar } from "expo-status-bar";
 import { KeyboardAvoidingView } from "react-native";
 import * as Crypto from "expo-crypto";
-import { db } from "../firebase";
+import { db, auth } from "../firebase";
 
-const JoinPlaceScreen = () => {
+const JoinPlaceScreen = ({ navigation }) => {
   const [placeName, setPlaceName] = useState("");
   const [placePassword, setPlacePassword] = useState("");
 
   const join = async () => {
-    const digest = await Crypto.digestStringAsync(
+    const enteredPassword = await Crypto.digestStringAsync(
       Crypto.CryptoDigestAlgorithm.SHA256,
       placePassword
     );
+    try {
+      const snapshot = await db.collection("places").doc(placeName).get();
+      if (!snapshot.exists) {
+        alert("Place does not exist");
+      } else {
+        if (enteredPassword === snapshot.digest) {
+          await db
+            .collection("places")
+            .doc(placeName)
+            .collection("joiners")
+            .doc(auth.currentUser.displayName)
+            .set({
+              timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+              email: auth.currentUser.email,
+            });
+          navigation.replace("Home");
+        } else {
+          alert("Wrong password");
+        }
+      }
+    } catch (error) {
+      alert(error.message);
+    }
   };
 
   return (

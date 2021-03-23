@@ -70,9 +70,8 @@ const HomeScreen = ({ navigation }) => {
     });
   }, []);
 
-  const goToPlace = (id, placeName) => {
+  const goToPlace = (placeName) => {
     navigation.navigate("Place", {
-      id,
       placeName,
     });
   };
@@ -80,11 +79,10 @@ const HomeScreen = ({ navigation }) => {
   return (
     <SafeAreaView>
       <ScrollView style={styles.scrollContainer}>
-        {places.map(({ id, data: { name, address } }) => (
+        {places.map(({ id, data: { address } }) => (
           <CustomListPlaceItem
             key={id}
-            id={id}
-            placeName={name}
+            placeName={id}
             placeAddress={address}
             goToPlace={goToPlace}
           />
