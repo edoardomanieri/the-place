@@ -10,7 +10,7 @@ import CreatePlaceScreen from "./screens/CreatePlaceScreen";
 import JoinPlaceScreen from "./screens/JoinPlaceScreen";
 import PlaceScreen from "./screens/PlaceScreen";
 import PeopleListScreen from "./screens/PeopleListScreen";
-import PlaceProvider from "./contexts/PlaceContext";
+import PlaceProvider from "./context/PlaceContext";
 
 const Stack = createStackNavigator();
 

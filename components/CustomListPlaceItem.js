@@ -1,10 +1,10 @@
 import React, { useContext } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { ListItem } from "react-native-elements";
-import { PlaceContext } from "../contexts/PlaceContext";
+import { PlaceContext } from "../context/PlaceContext";
 import { MaterialIcons } from "@expo/vector-icons";
 
-const CustomListItem = ({ placeName, placeAddress, goToPlace }) => {
+const CustomListPlaceItem = ({ placeName, placeAddress, goToPlace }) => {
   const { currentPlace } = useContext(PlaceContext);
   return (
     <ListItem
@@ -32,6 +32,6 @@ const CustomListItem = ({ placeName, placeAddress, goToPlace }) => {
   );
 };
 
-export default CustomListItem;
+export default CustomListPlaceItem;
 
 const styles = StyleSheet.create({});

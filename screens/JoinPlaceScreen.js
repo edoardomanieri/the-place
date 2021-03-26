@@ -5,22 +5,25 @@ import { StatusBar } from "expo-status-bar";
 import { KeyboardAvoidingView } from "react-native";
 import * as Crypto from "expo-crypto";
 import { db, auth } from "../firebase";
+import * as firebase from "firebase";
 
 const JoinPlaceScreen = ({ navigation }) => {
   const [placeName, setPlaceName] = useState("");
   const [placePassword, setPlacePassword] = useState("");
 
   const join = async () => {
-    const enteredPassword = await Crypto.digestStringAsync(
-      Crypto.CryptoDigestAlgorithm.SHA256,
-      placePassword
-    );
     try {
+      const enteredPassword = await Crypto.digestStringAsync(
+        Crypto.CryptoDigestAlgorithm.SHA256,
+        placePassword
+      );
+
       const snapshot = await db.collection("places").doc(placeName).get();
       if (!snapshot.exists) {
         alert("Place does not exist");
       } else {
-        if (enteredPassword === snapshot.digest) {
+        const place = snapshot.data();
+        if (enteredPassword === place.password) {
           await db
             .collection("places")
             .doc(placeName)
@@ -29,6 +32,15 @@ const JoinPlaceScreen = ({ navigation }) => {
             .set({
               timestamp: firebase.firestore.FieldValue.serverTimestamp(),
               email: auth.currentUser.email,
+            });
+
+          await db
+            .collection("userPlaces")
+            .doc(auth.currentUser.displayName)
+            .collection("places")
+            .doc(placeName)
+            .set({
+              address: place.address,
             });
           navigation.replace("Home");
         } else {

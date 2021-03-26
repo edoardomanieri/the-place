@@ -1,11 +1,13 @@
 import React, { useLayoutEffect, useState, useEffect, useContext } from "react";
 import { StyleSheet, View } from "react-native";
 import { Text, Button } from "react-native-elements";
-import { PlaceContext } from "../contexts/PlaceContext";
+import { PlaceContext } from "../context/PlaceContext";
+import { auth, db } from "../firebase";
+import * as firebase from "firebase";
 
 const PlaceScreen = ({ navigation, route }) => {
-  const [peopleInPlace, setPeopleInPlace] = useState([]);
-  const [peopleGeneral, setPeopleGeneral] = useState([]);
+  const [visitors, setVisitors] = useState([]);
+  const [joiners, setJoiners] = useState([]);
   const { currentPlace, setCurrentPlace } = useContext(PlaceContext);
 
   useLayoutEffect(() => {
@@ -14,60 +16,117 @@ const PlaceScreen = ({ navigation, route }) => {
     });
   }, []);
 
-  const enterPlace = () => {
-    // Check that location matches
-    //update db
-    navigation.goBack();
+  useEffect(() => {
+    const unsubscribe = db
+      .collection("places")
+      .doc(route.params.placeName)
+      .collection("joiners")
+      .onSnapshot((snapshot) =>
+        setJoiners(
+          snapshot.docs.map((doc) => ({
+            id: doc.id,
+            data: doc.data(),
+          }))
+        )
+      );
+    return unsubscribe;
+  }, []);
 
-    setCurrentPlace(route.params.placeName);
+  useEffect(() => {
+    const unsubscribe = db
+      .collection("places")
+      .doc(route.params.placeName)
+      .collection("visitors")
+      .onSnapshot((snapshot) =>
+        setVisitors(
+          snapshot.docs.map((doc) => ({
+            id: doc.id,
+            data: doc.data(),
+          }))
+        )
+      );
+    return unsubscribe;
+  }, []);
+
+  const enterPlace = async () => {
+    // Check that location matches
+    try {
+      await db
+        .collection("places")
+        .doc(route.params.placeName)
+        .collection("visitors")
+        .doc(auth.currentUser.displayName)
+        .set({
+          timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+          email: auth.currentUser.email,
+        });
+
+      navigation.goBack();
+
+      setCurrentPlace(route.params.placeName);
+    } catch (error) {
+      alert(error.message);
+    }
   };
 
-  const exitPlace = () => {
-    //remove from db
-    navigation.goBack();
+  const exitPlace = async () => {
+    try {
+      await db
+        .collection("places")
+        .doc(route.params.placeName)
+        .collection("visitors")
+        .doc(auth.currentUser.displayName)
+        .delete();
 
-    setCurrentPlace("");
+      navigation.goBack();
+
+      setCurrentPlace("");
+    } catch (error) {
+      alert(error.message);
+    }
   };
 
   return (
     <View style={styles.container}>
-      {peopleInPlace.length == 1 ? (
+      {visitors.length == 1 ? (
         <Text h4 style={{ marginTop: 10 }}>
           1 Person currently in {route.params.placeName}
         </Text>
       ) : (
         <Text h4 style={{ marginTop: 10 }}>
-          {peopleInPlace.length} People currently in {route.params.placeName}
+          {visitors.length} People currently in {route.params.placeName}
         </Text>
       )}
       <Button
         onPress={() =>
           navigation.navigate("PeopleList", {
             inPlace: true,
+            placeName: route.params.placeName,
           })
         }
         style={styles.button}
-        title="Check Them Out"
+        title="Check them out"
         type="outline"
         raised
       />
-      {peopleGeneral.length == 1 ? (
+      {joiners.length == 1 ? (
         <Text h4 style={{ marginTop: 20 }}>
           1 Person follows {route.params.placeName}
         </Text>
       ) : (
         <Text h4 style={{ marginTop: 20 }}>
-          {peopleGeneral.length} People follow {route.params.placeName}
+          {joiners.length} People follow {route.params.placeName}
         </Text>
       )}
       <Button
         onPress={() =>
           navigation.navigate("PeopleList", {
             inplace: false,
+            placeName: route.params.placeName,
           })
         }
         style={styles.button}
-        title="Check Them Out"
+        title="Check them out"
         type="outline"
         raised
       />
