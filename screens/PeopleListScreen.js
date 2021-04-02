@@ -41,13 +41,9 @@ const PeopleListScreen = ({ route }) => {
   return (
     <SafeAreaView>
       <ScrollView style={styles.scrollContainer}>
-        {people.map(({ id, data: { email } }) =>
-          id != auth.currentUser.displayName ? (
-            <CustomListPersonItem key={id} name={id} email={email} />
-          ) : (
-            <></>
-          )
-        )}
+        {people.map(({ id, data: { email } }) => (
+          <CustomListPersonItem key={id} name={id} email={email} />
+        ))}
       </ScrollView>
       <View style={styles.buttonContainer}></View>
     </SafeAreaView>

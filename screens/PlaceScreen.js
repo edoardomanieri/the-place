@@ -88,7 +88,11 @@ const PlaceScreen = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
-      {visitors.length == 1 ? (
+      {visitors.length == 0 ? (
+        <Text h4 style={{ marginTop: 10 }}>
+          No one currently in {route.params.placeName}
+        </Text>
+      ) : visitors.length == 1 ? (
         <Text h4 style={{ marginTop: 10 }}>
           1 Person currently in {route.params.placeName}
         </Text>
@@ -97,19 +101,27 @@ const PlaceScreen = ({ navigation, route }) => {
           {visitors.length} People currently in {route.params.placeName}
         </Text>
       )}
-      <Button
-        onPress={() =>
-          navigation.navigate("PeopleList", {
-            inPlace: true,
-            placeName: route.params.placeName,
-          })
-        }
-        style={styles.button}
-        title="Check them out"
-        type="outline"
-        raised
-      />
-      {joiners.length == 1 ? (
+      {visitors.length > 0 ? (
+        <Button
+          onPress={() =>
+            navigation.navigate("PeopleList", {
+              inPlace: true,
+              placeName: route.params.placeName,
+            })
+          }
+          style={styles.button}
+          title="Check them out"
+          type="outline"
+          raised
+        />
+      ) : (
+        <></>
+      )}
+      {joiners.length == 0 ? (
+        <Text h4 style={{ marginTop: 20 }}>
+          No one follows {route.params.placeName}
+        </Text>
+      ) : joiners.length == 1 ? (
         <Text h4 style={{ marginTop: 20 }}>
           1 Person follows {route.params.placeName}
         </Text>
@@ -118,18 +130,22 @@ const PlaceScreen = ({ navigation, route }) => {
           {joiners.length} People follow {route.params.placeName}
         </Text>
       )}
-      <Button
-        onPress={() =>
-          navigation.navigate("PeopleList", {
-            inplace: false,
-            placeName: route.params.placeName,
-          })
-        }
-        style={styles.button}
-        title="Check them out"
-        type="outline"
-        raised
-      />
+      {joiners.length > 0 ? (
+        <Button
+          onPress={() =>
+            navigation.navigate("PeopleList", {
+              inplace: false,
+              placeName: route.params.placeName,
+            })
+          }
+          style={styles.button}
+          title="Check them out"
+          type="outline"
+          raised
+        />
+      ) : (
+        <></>
+      )}
       {currentPlace === route.params.placeName ? (
         <View>
           <Text h4 style={{ marginTop: 20, alignSelf: "center" }}>
